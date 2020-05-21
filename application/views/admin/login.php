@@ -40,6 +40,7 @@ body {
 .form-user .form-control:focus {
   z-index: 2;
 }
+#wrapper #content-wrapper { background:none; }
 
 section { background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 5px 3px; }
 </style>

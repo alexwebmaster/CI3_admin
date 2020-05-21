@@ -123,32 +123,39 @@ class Auth
 
         $this->CI->db->select('*');
         $this->CI->db->where('email', $email);
-        $this->CI->db->where('password',  sha1($password));
         $this->CI->db->limit(1);
         $result = $this->CI->db->get('admin');
         $result = $result->row_array();
         
         if (sizeof($result) > 0)
         {
-            $admin = array();
-            $admin['admin'] = array();
-            $admin['admin']['id'] = $result['id'];
-            $admin['admin']['access'] = $result['access'];
-            $admin['admin']['firstname'] = $result['firstname'];
-            $admin['admin']['lastname'] = $result['lastname'];
-            $admin['admin']['email'] = $result['email'];
-            $admin['admin']['username'] = $result['username'];
-            
-            if($remember)
+            if(password_verify(  $password , $result['password'] ) )
             {
-                $loginCred = json_encode(array('email'=>$email, 'password'=>$password));
-                $loginCred = base64_encode(aes256Encrypt($loginCred));
-                //remember the user for 6 months
-                $this->generateCookie($loginCred, strtotime('+6 months'));
-            }
+                $admin = array();
+                $admin['admin'] = array();
+                $admin['admin']['id'] = $result['id'];
+                $admin['admin']['access'] = $result['access'];
+                $admin['admin']['firstname'] = $result['firstname'];
+                $admin['admin']['lastname'] = $result['lastname'];
+                $admin['admin']['email'] = $result['email'];
+                $admin['admin']['username'] = $result['username'];
+                
+                if($remember)
+                {
+                    $loginCred = json_encode(array('email'=>$email, 'password'=>$password));
+                    $loginCred = base64_encode(aes256Encrypt($loginCred));
+                    //remember the user for 6 months
+                    $this->generateCookie($loginCred, strtotime('+6 months'));
+                }
 
-            $this->CI->session->set_userdata($admin);
-            return true;
+                $this->CI->session->set_userdata($admin);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            die();
         }
         else
         {
@@ -183,7 +190,8 @@ class Auth
             $this->CI->load->library('email');
             
             $new_password       = random_string('alnum', 8);
-            $admin['password']  = sha1($new_password);
+            $hashed_password    = password_hash($new_password, PASSWORD_DEFAULT);
+            $admin['password']  = $hashed_password;
             $this->save_admin($admin);
             
             $this->CI->email->from(config_item('email'), config_item('site_name'));
@@ -289,6 +297,27 @@ class Auth
         $this->CI->db->select('username');
         $this->CI->db->from('admin');
         $this->CI->db->where('username', $str);
+        if ($id)
+        {
+            $this->CI->db->where('id !=', $id);
+        }
+        $count = $this->CI->db->count_all_results();
+        
+        if ($count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    function check_email($str, $id=false)
+    {
+        $this->CI->db->select('email');
+        $this->CI->db->from('admin');
+        $this->CI->db->where('email', $str);
         if ($id)
         {
             $this->CI->db->where('id !=', $id);

@@ -14,7 +14,6 @@ class Migration_Install extends CI_Migration {
         $this->_table_banners();
         $this->_table_banner_collections();
         $this->_table_boxes();
-        $this->_table_canned_messages();
         $this->_table_categories();
         $this->_table_countries();
         $this->_table_country_zones();
@@ -30,7 +29,7 @@ class Migration_Install extends CI_Migration {
     
     public function down()
     {
-        // Migration 2 has no down yet
+        // Migration 2 has no down
     } 
 
     /********************************************
@@ -78,7 +77,7 @@ class Migration_Install extends CI_Migration {
                             ),
                 'password' => array(
                             'type' => 'varchar',
-                            'constraint' => 40,
+                            'constraint' => 100,
                             'null' => false
                             )
             ));
@@ -87,7 +86,7 @@ class Migration_Install extends CI_Migration {
             $this->dbforge->create_table('admin', true);
 
             //add the default user
-            $this->db->insert('admin', array('username'=>'admin','email'=>'admin@admin.com', 'password'=>sha1('admin'), 'access'=>'Admin'));
+            $this->db->insert('admin', array('username'=>'admin','email'=>'admin@admin.com', 'password'=>password_hash('admin', PASSWORD_DEFAULT), 'access'=>'Admin'));
         }
     }
 
@@ -244,54 +243,6 @@ class Migration_Install extends CI_Migration {
             ));
             $this->dbforge->add_key('id', TRUE);
             $this->dbforge->create_table('boxes', TRUE);
-        }
-    }
-
-    /********************************************
-    *
-    * Generate canned_messages table
-    *
-    *********************************************/
-    private function _table_canned_messages()
-    {
-        if (!$this->db->table_exists('canned_messages'))
-        {
-
-            $this->dbforge->add_field(array(
-                    'id' => array(
-                                'type' => 'int',
-                                'constraint' => 9,
-                                'unsigned' => true,
-                                'auto_increment' => true
-                                ),
-                    'deletable' => array(
-                                'type' => 'tinyint',
-                                'constraint' => 1,
-                                'null' => false,
-                                'default' => 1
-                                ),
-                    'type' => array(
-                                'type' => 'enum',
-                                'constraint' => array('internal', 'order'),
-                                'null' => false
-                                ),
-                    'name' => array(
-                                'type' => 'varchar',
-                                'constraint' => 50,
-                                'null' => true
-                                ),
-                    'subject' => array(
-                                'type' => 'varchar',
-                                'constraint' => 100,
-                                'null' => true
-                                ),
-                    'content' => array(
-                                'type' => 'text'
-                                )
-            ));
-
-            $this->dbforge->add_key('id', true);
-            $this->dbforge->create_table('canned_messages', true);
         }
     }
 
@@ -977,15 +928,23 @@ class Migration_Install extends CI_Migration {
                 //Fix array items
                 foreach ($config as $key => $c)
                 {
+                    var_dump($c);
                     if (is_array($c))
                     {
                         $config[$key] = json_encode($c);
                     }
                 }
+                // $config['order_statuses'] = json_encode($config['order_statuses']);
 
                 //set locale to default
                 $config['locale'] = 'pt-BR';
                 $config['currency_iso'] = $config['currency'];
+
+                unset($config['currency']);
+                unset($config['currency_symbol']);
+                unset($config['currency_symbol_side']);
+                unset($config['currency_decimal']);
+                unset($config['currency_thousands_separator']);
             }
             else
             {
@@ -1005,7 +964,7 @@ class Migration_Install extends CI_Migration {
                 $config['currency_iso'] = 'BRL';
                 $config['weight_unit'] = 'KG';
                 $config['dimension_unit'] = 'CM';
-                $config['site_logo'] = '/assets/img/logo.png';
+                $config['site_logo'] = '/images/logo.png';
                 $config['admin_folder'] = 'admin';
                 $config['require_login'] = false;
             }
@@ -1017,4 +976,5 @@ class Migration_Install extends CI_Migration {
             unset($config);
         }
     } 
+
 }

@@ -13,7 +13,7 @@ class Login extends Base_Controller {
 
 		//we check if they are logged in, generally this would be done in the constructor, but we want to allow customers to log out still
 		//or still be able to either retrieve their password or anything else this controller may be extended to do
-		$redirect	= false; //$this->auth->is_logged_in(false, false);
+		$redirect	= $this->auth->is_logged_in(false, false);
 		//if they are logged in, we send them back to the dashboard by default, if they are not logging in
 		if ($redirect)
 		{

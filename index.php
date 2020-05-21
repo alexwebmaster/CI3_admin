@@ -1,4 +1,5 @@
 <?php
+require 'env.php';
 /**
  * CodeIgniter
  *

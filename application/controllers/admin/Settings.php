@@ -31,7 +31,7 @@ class Settings extends Admin_Controller {
         $this->form_validation->set_rules('locale', 'lang:locale', 'required');
         $this->form_validation->set_rules('currency_iso', 'lang:currency', 'required');
 
-        $data = $this->Settings_model->get_settings('cart');
+        $data = $this->Settings_model->get_settings('site');
 
         $data['config'] = $data;
         //break out order statuses to an array
@@ -76,13 +76,12 @@ class Settings extends Admin_Controller {
         }
         else
         {
-            $data['zones_menu'] = $this->Location_model->get_zones_menu(array_shift(array_keys($data['countries_menu'])));
+            $options_keys = array_keys($data['countries_menu']);
+            $options = array_shift($options_keys);
+            $data['zones_menu'] = $this->Location_model->get_zones_menu($options);
         }
 
         $data['page_title'] = lang('common_cart_configuration');
-        $data['order_statuses_translated'] = json_encode(array());
-        $data['require_address'] = '';
-        $data['allow_shipping_notes'] = '';
 
         if ($this->form_validation->run() == FALSE)
         {
@@ -98,33 +97,8 @@ class Settings extends Admin_Controller {
             //fix boolean values
             $save['ssl_support']         = $this->input->post('ssl_support');
             $save['require_login']       = $this->input->post('require_login');
-            $save['require_address']     = $this->input->post('require_address');
-            $save['new_customer_status'] = $this->input->post('new_customer_status');
-            $save['allow_os_purchase']   = $this->input->post('allow_os_purchase');
-            $save['allow_shipping_notes']= $this->input->post('allow_shipping_notes');
-            $save['tax_shipping']        = $this->input->post('tax_shipping');
 
-            $posted_status               =  $this->input->post('order_status');
-            $order_statuses_translated   =  $this->input->post('order_statuses_translated');
-            $order_status_default        =  $this->input->post('order_status_default');
-            $order_status_color          =  $this->input->post('order_status_color');
-
-            //fix statuses
-            foreach ($posted_status as $key => $status) 
-            {
-                $statuses[$status]       =  $order_statuses_translated[$key];
-                $statuses_colors[$status]=  $order_status_color[$key];
-            }
-            
-            $save['order_statuses']         = json_encode($statuses);
-            $save['order_statuses_colors']  = json_encode($statuses_colors);
-            $save['order_status']           = $order_status_default;
-
-            unset( $save['order_statuses_translated'] );
-            unset( $save['order_status_default'] );
-            unset( $save['order_status_color'] );
-
-            $this->Settings_model->save_settings('cart', $save);
+            $this->Settings_model->save_settings('site', $save);
 
             redirect(config_item('admin_folder').'/settings');
         }        
