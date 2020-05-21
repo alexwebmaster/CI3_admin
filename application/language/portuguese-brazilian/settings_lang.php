@@ -33,7 +33,7 @@ $lang['save_canned_message']		= 'Salvar Mensagem';
 $lang['tab_canned_info']			= 'Informação de Mensagem';
 $lang['label_canned_name']			= 'Nome';
 $lang['label_canned_subject']		= 'Assunto';
-$lang['config_updated_message'] 	= 'A Comfiguração da loja foi atualizada.';
+$lang['config_updated_message'] 	= 'A Configuração da loja foi atualizada.';
 $lang['status_exists_error'] 		= 'O Status solicitado já existe.';
 $lang['confirm_delete_order_status']= 'Tem certeza que deseja remover o este status de pedido?';
 
