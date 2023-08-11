@@ -312,6 +312,26 @@ class Migration_Install extends CI_Migration {
                                 'type' => 'text',
                                 'null' => false
                                     ),
+                        'qualified' => array(
+                                'type' => 'tinyint',
+                                'constraint' => 1,
+                                'default' => 1
+                                    ),
+                        'show_categories' => array(
+                                'type' => 'tinyint',
+                                'constraint' => 1,
+                                'default' => 1
+                                    ),
+                        'show_description' => array(
+                                'type' => 'tinyint',
+                                'constraint' => 1,
+                                'default' => 1
+                                    ),
+                        'fields' => array(
+                                'type' => 'varchar',
+                                'constraint' => 255,
+                                'default' => 1
+                                    ),
                         'enabled' => array(
                                 'type' => 'tinyint',
                                 'constraint' => 1,
